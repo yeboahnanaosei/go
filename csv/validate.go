@@ -13,12 +13,7 @@ type InvalidRecord struct {
 }
 
 // Validate validates f as a valid csv file with valid data.
-func Validate(f io.Reader) ([][]string, []InvalidRecord, error) {
-	var (
-		validRecords   [][]string
-		invalidRecords []InvalidRecord
-	)
-
+func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidRecord, err error) {
 	// TODO: Run a check to ensure that we are getting a valid csv file
 	// Possibly we can check for the mime type
 
