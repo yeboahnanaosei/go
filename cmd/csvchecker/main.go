@@ -10,42 +10,58 @@ import (
 )
 
 func main() {
+	out := make(map[string]interface{})
+
 	csvFilepath := flag.String("file", "", "The path to the file the CSV file")
 	flag.Parse()
 
 	if *csvFilepath == "" {
-		fmt.Fprintf(os.Stderr, "csvchecker: %v\n", "You did not supply the path to the file. Please supply '-file /path/to/csv/file'")
-		os.Exit(1)
+		out["status"] = "fail"
+		out["code"] = 400
+		out["msg"] = "Bad request"
+		out["error"] = map[string]string{
+			"msg": "no path to csv file supplied. a path to a csv file was expected but none was supplied",
+			"fix": "use the '-file' flag to supply the path eg. -file /path/to/csv/file",
+		}
+		json.NewEncoder(os.Stdout).Encode(out)
+		return
 	}
 
 	csvFile, err := os.Open(*csvFilepath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "csvchecker: %v %v\n", "Failed to open supplied csv file", err)
-		os.Exit(1)
+		out["status"] = "error"
+		out["code"] = 500
+		out["msg"] = "An internal error occured"
+		out["error"] = map[string]string{
+			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
+			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
+		}
+		json.NewEncoder(os.Stdout).Encode(out)
+		return
 	}
 	defer csvFile.Close()
 
 	validRecords, invalidRecords, err := csv.Validate(csvFile)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "csvchecker: %v\n", err)
-		os.Exit(1)
+		out["status"] = "error"
+		out["code"] = 500
+		out["msg"] = "An internal error occured"
+		out["error"] = map[string]string{
+			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
+			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
+		}
+		json.NewEncoder(os.Stdout).Encode(out)
+		return
 	}
 
-	payload := map[string]interface{}{
-		"ok":             false,
-		"validRecords":   nil,
-		"invalidRecords": nil,
+	out["status"] = "success"
+	out["code"] = 200
+	out["msg"] = "operation was successful"
+	out["data"] = map[string]interface{}{
+		"validRecords":   validRecords,
+		"invalidRecords": invalidRecords,
 	}
-
-	if len(invalidRecords) == 0 {
-		payload["ok"] = true
-		payload["validRecords"] = validRecords
-	} else {
-		payload["ok"] = false
-		payload["invalidRecords"] = invalidRecords
-		payload["validRecords"] = validRecords
-	}
-
-	json.NewEncoder(os.Stdout).Encode(payload)
+	json.NewEncoder(os.Stdout).Encode(out)
+	return
 }
