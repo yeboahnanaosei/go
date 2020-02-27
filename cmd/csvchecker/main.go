@@ -18,7 +18,7 @@ func main() {
 	if *csvFilepath == "" {
 		out["success"] = false
 		out["code"] = 400
-		out["msg"] = "Bad request"
+		out["summary"] = "Invalid request"
 		out["error"] = map[string]string{
 			"msg": "no path to csv file supplied. a path to a csv file was expected but none was supplied",
 			"fix": "use the '-file' flag to supply the path eg. -file /path/to/csv/file",
@@ -31,7 +31,7 @@ func main() {
 	if err != nil {
 		out["success"] = false
 		out["code"] = 500
-		out["msg"] = "An internal error occured"
+		out["summary"] = "An internal error occured"
 		out["error"] = map[string]string{
 			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
 			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
@@ -46,7 +46,7 @@ func main() {
 	if err != nil {
 		out["success"] = false
 		out["code"] = 500
-		out["msg"] = "An internal error occured"
+		out["summary"] = "An internal error occured"
 		out["error"] = map[string]string{
 			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
 			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
@@ -57,7 +57,7 @@ func main() {
 
 	out["success"] = true
 	out["code"] = 200
-	out["msg"] = "operation was successful"
+	out["summary"] = "Operation successful"
 	out["data"] = map[string]interface{}{
 		"validRecords":   validRecords,
 		"invalidRecords": invalidRecords,
