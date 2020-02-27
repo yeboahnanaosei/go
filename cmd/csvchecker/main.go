@@ -14,7 +14,7 @@ func main() {
 	flag.Parse()
 
 	if *csvFilepath == "" {
-		fmt.Fprintf(os.Stderr, "csvchecker: %v\n", "You did not supply the path to the file. Please supply '--file /path/to/csv/file'")
+		fmt.Fprintf(os.Stderr, "csvchecker: %v\n", "You did not supply the path to the file. Please supply '-file /path/to/csv/file'")
 		os.Exit(1)
 	}
 
