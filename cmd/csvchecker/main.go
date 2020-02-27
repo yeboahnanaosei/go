@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/yeboahnanaosei/gitplus/csv"
 )
@@ -48,15 +47,5 @@ func main() {
 		payload["validRecords"] = validRecords
 	}
 
-	jsonPayload, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "csvchecker: %v\n", "An error was encountered returning the json payload")
-		os.Exit(1)
-	}
-
-	replacer := strings.NewReplacer("\\", "")
-
-	finalPayload := replacer.Replace(string(jsonPayload))
-
-	fmt.Fprintf(os.Stdout, "%s", finalPayload)
+	json.NewEncoder(os.Stdout).Encode(payload)
 }
