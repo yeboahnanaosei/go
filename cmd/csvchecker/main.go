@@ -29,7 +29,7 @@ func main() {
 
 	csvFile, err := os.Open(*csvFilepath)
 	if err != nil {
-		out["status"] = "error"
+		out["status"] = "fail"
 		out["code"] = 500
 		out["msg"] = "An internal error occured"
 		out["error"] = map[string]string{
@@ -44,7 +44,7 @@ func main() {
 	validRecords, invalidRecords, err := csv.Validate(csvFile)
 
 	if err != nil {
-		out["status"] = "error"
+		out["status"] = "fail"
 		out["code"] = 500
 		out["msg"] = "An internal error occured"
 		out["error"] = map[string]string{
