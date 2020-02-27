@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 
 	if *csvFilepath == "" {
-		out["status"] = "fail"
+		out["success"] = false
 		out["code"] = 400
 		out["msg"] = "Bad request"
 		out["error"] = map[string]string{
@@ -29,7 +29,7 @@ func main() {
 
 	csvFile, err := os.Open(*csvFilepath)
 	if err != nil {
-		out["status"] = "fail"
+		out["success"] = false
 		out["code"] = 500
 		out["msg"] = "An internal error occured"
 		out["error"] = map[string]string{
@@ -44,7 +44,7 @@ func main() {
 	validRecords, invalidRecords, err := csv.Validate(csvFile)
 
 	if err != nil {
-		out["status"] = "fail"
+		out["success"] = false
 		out["code"] = 500
 		out["msg"] = "An internal error occured"
 		out["error"] = map[string]string{
@@ -55,7 +55,7 @@ func main() {
 		return
 	}
 
-	out["status"] = "success"
+	out["success"] = true
 	out["code"] = 200
 	out["msg"] = "operation was successful"
 	out["data"] = map[string]interface{}{
