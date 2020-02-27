@@ -20,7 +20,7 @@ func main() {
 		out["code"] = 400
 		out["summary"] = "Invalid request"
 		out["error"] = map[string]string{
-			"msg": "no path to csv file supplied. a path to a csv file was expected but none was supplied",
+			"msg": "No path to csv file supplied. A path to a csv file was expected but none was supplied",
 			"fix": "use the '-file' flag to supply the path eg. -file /path/to/csv/file",
 		}
 		json.NewEncoder(os.Stdout).Encode(out)
@@ -33,8 +33,8 @@ func main() {
 		out["code"] = 500
 		out["summary"] = "An internal error occured"
 		out["error"] = map[string]string{
-			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
-			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
+			"msg": fmt.Sprintf("There was an error trying to process the csv file. Server said: %v", err),
+			"fix": "Ensure you provided a valid csv file. If this continues, please wait and try again later. You can also contact support",
 		}
 		json.NewEncoder(os.Stdout).Encode(out)
 		return
@@ -48,8 +48,8 @@ func main() {
 		out["code"] = 500
 		out["summary"] = "An internal error occured"
 		out["error"] = map[string]string{
-			"msg": fmt.Sprintf("there was an error trying to process the csv file. server said: %v", err),
-			"fix": "please make sure you provided is a valid csv file. If this continues, please wait and try again later. You can also contact support",
+			"msg": fmt.Sprintf("There was an error trying to process the csv file. Server said: %v", err),
+			"fix": "Ensure you provided a valid csv file. If this continues, please wait and try again later. You can also contact support",
 		}
 		json.NewEncoder(os.Stdout).Encode(out)
 		return
