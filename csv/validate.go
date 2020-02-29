@@ -32,23 +32,23 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 	for row, record := range studentRecords {
 		currentRecord := new(InvalidRecord)
 		currentRecord.RowNumber = row + rowOffset
-		recordIsInvalid := false
+		recordIsValid := true
 
 		for column, field := range record {
 			if strings.Trim(field, " ") == "" {
-				recordIsInvalid = true
+				recordIsValid = false
 				currentRecord.Columns = append(currentRecord.Columns, header[column])
 			}
 		}
 
-		if recordIsInvalid && len(currentRecord.Columns) != len(header) {
+		if recordIsValid {
+			validRecords = append(validRecords, record)
+		} else if !recordIsValid && len(currentRecord.Columns) != len(header) {
 			invalidRecords = append(invalidRecords, *currentRecord)
-		} else if recordIsInvalid && len(currentRecord.Columns) == len(header) {
+		} else if !recordIsValid && len(currentRecord.Columns) == len(header) {
 			// this condition means that the entire record is empty. we don't
 			// need to keep it for anything
 			continue
-		} else {
-			validRecords = append(validRecords, record)
 		}
 	}
 	return validRecords, invalidRecords, nil
