@@ -27,6 +27,7 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 
 	rowOffset := 2
 	header := uploadedCSV[0]
+	headerLength := len(header)
 	studentRecords := uploadedCSV[1:]
 
 	for row, record := range studentRecords {
@@ -43,9 +44,9 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 
 		if recordIsValid {
 			validRecords = append(validRecords, record)
-		} else if !recordIsValid && len(currentRecord.Columns) != len(header) {
+		} else if !recordIsValid && len(currentRecord.Columns) != headerLength {
 			invalidRecords = append(invalidRecords, *currentRecord)
-		} else if !recordIsValid && len(currentRecord.Columns) == len(header) {
+		} else if !recordIsValid && len(currentRecord.Columns) == headerLength {
 			// this condition means that the entire record is empty. we don't
 			// need to keep it for anything
 			continue
