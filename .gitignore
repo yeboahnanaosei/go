@@ -1,3 +1,4 @@
 .vscode/
 *.csv
 cmd/server
+cmd/cvet/cvet
