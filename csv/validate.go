@@ -46,10 +46,6 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 			validRecords = append(validRecords, record)
 		} else if !recordIsValid && len(currentRecord.Columns) != headerLength {
 			invalidRecords = append(invalidRecords, *currentRecord)
-		} else if !recordIsValid && len(currentRecord.Columns) == headerLength {
-			// this condition means that the entire record is empty. we don't
-			// need to keep it for anything
-			continue
 		}
 	}
 	return validRecords, invalidRecords, nil
