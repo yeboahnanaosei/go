@@ -28,9 +28,8 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 	rowOffset := 2
 	header := uploadedCSV[0]
 	headerLength := len(header)
-	studentRecords := uploadedCSV[1:]
 
-	for row, record := range studentRecords {
+	for row, record := range uploadedCSV[1:] {
 		currentRecord := new(InvalidRecord)
 		currentRecord.RowNumber = row + rowOffset
 		recordIsValid := true
