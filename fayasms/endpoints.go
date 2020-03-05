@@ -1,7 +1,7 @@
 package fayasms
 
 import (
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
@@ -13,6 +13,28 @@ var endpoints = map[string]string{
 	"estimate": "https://devapi.fayasms.com/estimate",
 	"senders":  "https://devapi.fayasms.com/senders",
 	"new_id":   "https://devapi.fayasms.com/senders/new",
+}
+
+// exec executes the actual http request by fetching the endpoint
+// to make the request to
+func (f *FayaSMS) exec(endpoint string) (response string, err error) {
+	e, ok := endpoints[endpoint]
+	if !ok {
+		return response, errors.New("fayasms: unknown endpoint targetted")
+	}
+
+	res, err := http.PostForm(e, f.payload)
+	if err != nil {
+		return response, err
+	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return response, err
+	}
+	defer res.Body.Close()
+
+	return string(data), nil
 }
 
 // Send sends the message to the recipient or recipients you've set
@@ -29,26 +51,4 @@ func (f *FayaSMS) GetEstimate() (response string, err error) {
 // GetBalance returns your current balance on FayaSMS
 func (f *FayaSMS) GetBalance() (response string, err error) {
 	return f.exec("balance")
-}
-
-// exec executes the actual http request by fetching the endpoint
-// to make the request to
-func (f *FayaSMS) exec(endpoint string) (response string, err error) {
-	e, ok := endpoints[endpoint]
-	if !ok {
-		return response, fmt.Errorf("invalid endpoint: %s", e)
-	}
-
-	res, err := http.PostForm(e, f.payload)
-	if err != nil {
-		return response, err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return response, err
-	}
-	defer res.Body.Close()
-
-	return string(data), nil
 }
