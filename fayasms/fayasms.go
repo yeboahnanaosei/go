@@ -11,8 +11,8 @@ type FayaSMS struct {
 	payload url.Values
 }
 
-// BodyCharLimit is the limit on the number of allowed characters in the SMS body
-const BodyCharLimit = 3200
+// AllowedMsgLen is the limit on the number of allowed characters in the SMS body
+const AllowedMsgLen = 3200
 
 var payload = map[string][]string{
 	"AppKey":       {},
@@ -42,9 +42,10 @@ func New(appKey, appSecret, senderID string) *FayaSMS {
 // The body must not be more than 3200 characters.
 // Must contain on UTF-8 characters
 func (f *FayaSMS) SetBody(body string) error {
-	bodyLength := len(body)
-	if len(body) > BodyCharLimit {
-		return fmt.Errorf("fayasms: sms body cannot be more than %d characters. you currently have %d", BodyCharLimit, bodyLength)
+	msg := strings.Trim(body, " ")
+	msgLen := len(msg)
+	if msgLen > AllowedMsgLen {
+		return fmt.Errorf("fayasms: sms body cannot be more than %d characters. you currently have %d", AllowedMsgLen, msgLen)
 	}
 
 	f.payload.Set("Message", body)
