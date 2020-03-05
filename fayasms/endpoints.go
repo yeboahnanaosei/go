@@ -35,7 +35,7 @@ func (f *FayaSMS) Send() (response string, err error) {
 // GetEstimate lets you know the number of units it will cost you to send the message.
 // This is based on the size or length of your message body and the number of recipients.
 func (f *FayaSMS) GetEstimate() (response string, err error) {
-	endpoint, _ := endPoints["send"]
+	endpoint, _ := endPoints["estimate"]
 	res, err := http.PostForm(endpoint, f.payload)
 
 	if err != nil {
