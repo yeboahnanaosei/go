@@ -50,3 +50,21 @@ func (f *FayaSMS) GetEstimate() (response string, err error) {
 
 	return string(data), err
 }
+
+// GetBalance returns your current balance on FayaSMS
+func (f *FayaSMS) GetBalance() (response string, err error) {
+	endpoint, _ := endPoints["balance"]
+	res, err := http.PostForm(endpoint, f.payload)
+
+	if err != nil {
+		return response, err
+	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return response, err
+	}
+	defer res.Body.Close()
+
+	return string(data), err
+}
