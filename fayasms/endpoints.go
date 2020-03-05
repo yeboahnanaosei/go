@@ -14,8 +14,7 @@ var endPoints = map[string]string{
 	"new_id":   "https://devapi.fayasms.com/senders/new",
 }
 
-// Send sends the message you've sent to the recipient
-// or recipients you've set
+// Send sends the message to the recipient or recipients you've set
 func (f *FayaSMS) Send() (response string, err error) {
 	endpoint, _ := endPoints["send"]
 	res, err := http.PostForm(endpoint, f.payload)
@@ -33,10 +32,8 @@ func (f *FayaSMS) Send() (response string, err error) {
 	return string(data), err
 }
 
-// GetEstimate lets you know the number of units it
-// will cost you to send the message you intend to
-// send. This is based on the size or length of your
-// message body and the number of recipients.
+// GetEstimate lets you know the number of units it will cost you to send the message.
+// This is based on the size or length of your message body and the number of recipients.
 func (f *FayaSMS) GetEstimate() (response string, err error) {
 	endpoint, _ := endPoints["send"]
 	res, err := http.PostForm(endpoint, f.payload)
