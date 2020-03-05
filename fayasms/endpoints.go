@@ -15,6 +15,28 @@ var endpoints = map[string]string{
 	"new_id":   "https://devapi.fayasms.com/senders/new",
 }
 
+
+// mandatoryFields are required by FayaSMS to be present in every request
+var mandatoryFields = []string{
+	"AppKey", "AppSecret",
+}
+
+
+// contingentFields are only required based on the endpoint being hit.
+// This map shows the endpoints and the fields they require
+var contingentFields = map[string][]map[string]string{
+	"send": {
+		{"name": "From", "errMsg": "no sender id has been set"},
+		{"name": "Message", "errMsg": "no message body has been set"},
+		{"name": "To", "errMsg": "no recipient has been set"},
+	},
+	"estimate": {
+		{"name": "Recipients", "errMsg": "no recipient has been set"},
+		{"name": "Message", "errMsg": "no message body set"},
+	},
+}
+
+
 // exec executes the actual http request by fetching the endpoint
 // to make the request to
 func (f *FayaSMS) exec(endpoint string) (response string, err error) {
