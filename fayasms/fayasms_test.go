@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func TestSetMessageBody(t *testing.T) {
+func TestSetBody(t *testing.T) {
 	sms := New("appkey", "appsecret", "senderid")
 	sms.SetBody("somebody");
 	
