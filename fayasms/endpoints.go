@@ -1,11 +1,12 @@
 package fayasms
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-var endPoints = map[string]string{
+var endpoints = map[string]string{
 	"send":     "https://devapi.fayasms.com/send",
 	"messages": "https://devapi.fayasms.com/messages",
 	"balance":  "https://devapi.fayasms.com/balance",
@@ -16,46 +17,29 @@ var endPoints = map[string]string{
 
 // Send sends the message to the recipient or recipients you've set
 func (f *FayaSMS) Send() (response string, err error) {
-	endpoint, _ := endPoints["send"]
-	res, err := http.PostForm(endpoint, f.payload)
-
-	if err != nil {
-		return response, err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return response, err
-	}
-	defer res.Body.Close()
-
-	return string(data), err
+	return f.exec("send")
 }
 
 // GetEstimate lets you know the number of units it will cost you to send the message.
 // This is based on the size or length of your message body and the number of recipients.
 func (f *FayaSMS) GetEstimate() (response string, err error) {
-	endpoint, _ := endPoints["estimate"]
-	res, err := http.PostForm(endpoint, f.payload)
-
-	if err != nil {
-		return response, err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return response, err
-	}
-	defer res.Body.Close()
-
-	return string(data), err
+	return f.exec("estimate")
 }
 
 // GetBalance returns your current balance on FayaSMS
 func (f *FayaSMS) GetBalance() (response string, err error) {
-	endpoint, _ := endPoints["balance"]
-	res, err := http.PostForm(endpoint, f.payload)
+	return f.exec("balance")
+}
 
+// exec executes the actual http request by fetching the endpoint
+// to make the request to
+func (f *FayaSMS) exec(endpoint string) (response string, err error) {
+	e, ok := endpoints[endpoint]
+	if !ok {
+		return response, fmt.Errorf("invalid endpoint: %s", e)
+	}
+
+	res, err := http.PostForm(e, f.payload)
 	if err != nil {
 		return response, err
 	}
@@ -66,5 +50,5 @@ func (f *FayaSMS) GetBalance() (response string, err error) {
 	}
 	defer res.Body.Close()
 
-	return string(data), err
+	return string(data), nil
 }
