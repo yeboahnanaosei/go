@@ -52,11 +52,10 @@ func (f *FayaSMS) SetBody(body string) error {
 	return nil
 }
 
-// SetRecipient sets the recipient of the message.
-// It must comply with the telephone rules.
-// Meaning the number must be in international telephone format
-// (e.g: 23326XXXXXXX,23324XXXXXXX,23320XXXXXXX...)
-// If you are sending a message to multiple recipients use SetBulkRecipients instead
+// SetRecipient sets the recipient of the message. It must comply with the 
+// telephone rules. Meaning the number must be in international telephone format
+// e.g: 23326XXXXXXX,23324XXXXXXX,23320XXXXXXX If you are sending a message
+// to multiple recipients use SetBulkRecipients instead
 func (f *FayaSMS) SetRecipient(r string) {
 	f.payload.Set("To", r)
 	f.payload.Set("Recipients", r)
@@ -64,7 +63,8 @@ func (f *FayaSMS) SetRecipient(r string) {
 
 // SetBulkRecipients sets all phone numbers in r as recipients of the text message.
 // Each phone number in r must comply with international telephone rules.
-// Meaning the number must be in international format. eg e.g: 23326XXXXXXX,23324XXXXXXX
+// Meaning the number must be in international format.
+// eg e.g: 23326XXXXXXX,23324XXXXXXX
 func (f *FayaSMS) SetBulkRecipients(r []string) {
 	recipients := strings.Join(r, ",")
 	f.payload.Set("To", recipients)

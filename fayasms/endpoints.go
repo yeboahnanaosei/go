@@ -23,6 +23,14 @@ func (f *FayaSMS) exec(endpoint string) (response string, err error) {
 		return response, errors.New("fayasms: unknown endpoint targetted")
 	}
 
+	if err = f.checkMandatoryFields(mandatoryFields); err != nil {
+		return response, err
+	}
+
+	if err = f.checkContingentFields(endpoint, contingentFields); err != nil {
+		return response, err
+	}
+
 	res, err := http.PostForm(e, f.payload)
 	if err != nil {
 		return response, err
