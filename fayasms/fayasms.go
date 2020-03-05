@@ -32,6 +32,7 @@ var payload = map[string][]string{
 // New returns a new FayaSMS instance
 func New(appKey, appSecret, senderID string) *FayaSMS {
 	f := new(FayaSMS)
+	f.payload = url.Values{}
 	f.payload.Set("AppKey", appKey)
 	f.payload.Set("AppSecret", appSecret)
 	f.payload.Set("From", senderID)
