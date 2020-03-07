@@ -40,7 +40,7 @@ func New(appKey, appSecret, senderID string) *FayaSMS {
 
 // SetBody sets the body of the text message to be sent.
 // The body must not be more than 3200 characters.
-// Must contain on UTF-8 characters
+// Must contain only UTF-8 characters
 func (f *FayaSMS) SetBody(body string) error {
 	msg := strings.Trim(body, " ")
 	msgLen := len(msg)
