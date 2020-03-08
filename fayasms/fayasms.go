@@ -43,7 +43,7 @@ func New(appKey, appSecret, senderID string) *FayaSMS {
 // The body must not be more than 3200 characters.
 // Must contain only UTF-8 characters
 func (f *FayaSMS) SetBody(body string) error {
-	msg := strings.Trim(body, " ")
+	msg := strings.TrimSpace(body)
 	msgLen := len(msg)
 	if msgLen > AllowedMsgLen {
 		return fmt.Errorf("fayasms: sms body cannot be more than %d characters. you currently have %d", AllowedMsgLen, msgLen)
