@@ -72,3 +72,11 @@ func (f *FayaSMS) SetBulkRecipients(r []string) {
 	f.payload.Set("Recipients", recipients)
 }
 
+// Schedule schedules a message to be sent later on the set date and time.
+// date must be in the format "YYYY-MM-DD" eg. "2020-12-31" which is (2020 December 31st).
+// time must be in the 24hr format "HH:ii:ss" eg "13:30:04" which is 1pm 30min 4sec
+func (f *FayaSMS) Schedule(date string, time string) {
+	f.payload.Set("ScheduleDate", date)
+	f.payload.Set("ScheduleTime", time)
+	f.extra = true
+}
