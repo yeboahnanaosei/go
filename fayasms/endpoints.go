@@ -125,3 +125,14 @@ func (f *FayaSMS) GetEstimate() (response string, err error) {
 func (f *FayaSMS) GetBalance() (response string, err error) {
 	return f.exec("balance")
 }
+
+// RequestSenderID makes a request to FayaSMS for a new sender id
+// senderID is the sender id you are requesting for.
+// desc is a description of the sender id. What will you use the id for.
+// The description is used in the approval process
+func (f *FayaSMS) RequestSenderID(senderID, desc string) (response string, err error) {
+	f.payload.Set("Name", senderID)
+	f.payload.Set("Description", desc)
+
+	return f.exec("new_id")
+}
