@@ -9,6 +9,7 @@ import (
 // FayaSMS holds the entire data to be sent
 type FayaSMS struct {
 	payload url.Values
+	extra bool
 }
 
 // AllowedMsgLen is the limit on the number of allowed characters in the SMS body

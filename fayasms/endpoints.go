@@ -46,6 +46,13 @@ var contingentFields = map[string][]map[string]string{
 	},
 }
 
+var extraContingentFields = map[string][]map[string]string{
+	"send": {
+		{"name": "ScheduleDate", "errMsg": "no ScheduleDate supplied"},
+		{"name": "ScheduleTime", "errMsg": "no ScheduleTime supplied"},
+	},
+}
+
 // checkContingentFields checks that all contingent fields required by endpoint are set
 func (f *FayaSMS) checkContingentFields(endpoint string, contingentFields map[string][]map[string]string) error {
 	fields, ok := contingentFields[endpoint]
@@ -61,13 +68,22 @@ func (f *FayaSMS) checkContingentFields(endpoint string, contingentFields map[st
 		}
 	}
 
+	if f.extra {
+		f.extra = false
+		err := f.checkContingentFields(endpoint, extraContingentFields)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
+
 
 // exec executes the actual http request by fetching the endpoint
 // to make the request to
 func (f *FayaSMS) exec(endpoint string) (response string, err error) {
-	e, ok := endpoints[endpoint]
+	endpnt, ok := endpoints[endpoint]
 	if !ok {
 		return response, errors.New("fayasms: unknown endpoint targetted")
 	}
@@ -80,7 +96,7 @@ func (f *FayaSMS) exec(endpoint string) (response string, err error) {
 		return response, err
 	}
 
-	res, err := http.PostForm(e, f.payload)
+	res, err := http.PostForm(endpnt, f.payload)
 	if err != nil {
 		return response, err
 	}
