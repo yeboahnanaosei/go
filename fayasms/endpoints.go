@@ -138,7 +138,8 @@ func (f *FayaSMS) RequestSenderID(senderID, desc string) (response string, err e
 }
 
 
-// GetMessages returns all the messages you've sent using your AppKey and AppSecret
-func (f *FayaSMS) GetMessages() (response string, err error) {
+// RetrieveMessages returns all the messages you've sent using your AppKey and AppSecret
+func (f *FayaSMS) RetrieveMessages() (response string, err error) {
 	return f.exec("messages")
 }
+
