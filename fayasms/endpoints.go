@@ -51,6 +51,9 @@ var extraContingentFields = map[string][]map[string]string{
 		{"name": "ScheduleDate", "errMsg": "no ScheduleDate supplied"},
 		{"name": "ScheduleTime", "errMsg": "no ScheduleTime supplied"},
 	},
+	"messages": {
+		{"name": "MessageId", "errMsg": "no message id supplied"},
+	},
 }
 
 // checkContingentFields checks that all contingent fields required by endpoint are set
@@ -78,7 +81,6 @@ func (f *FayaSMS) checkContingentFields(endpoint string, contingentFields map[st
 
 	return nil
 }
-
 
 // exec executes the actual http request by fetching the endpoint
 // to make the request to
@@ -143,3 +145,10 @@ func (f *FayaSMS) RetrieveMessages() (response string, err error) {
 	return f.exec("messages")
 }
 
+
+// RetrieveMessage retrieves a particular message you've sent whose id is messageID
+func (f *FayaSMS) RetrieveMessage(messageID string) (response string, err error) {
+	f.payload.Set("MessageId", messageID)
+	f.extra = true
+	return f.exec("messages")
+}
