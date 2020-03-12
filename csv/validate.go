@@ -35,7 +35,7 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 		recordIsValid := true
 
 		for column, field := range record {
-			if strings.Trim(field, " ") == "" {
+			if strings.TrimSpace(field) == "" {
 				recordIsValid = false
 				currentRecord.Columns = append(currentRecord.Columns, header[column])
 			}
