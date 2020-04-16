@@ -30,19 +30,25 @@ func TestSetBody(t *testing.T) {
 }
 
 func TestSetRecipient(t *testing.T) {
-	sms := New("appkey", "appsecret", "senderid")
-	recipient := "23326XXXXXXX"
-	sms.SetRecipient(recipient)
-
-	to := sms.payload.Get("To")
-	rs := sms.payload.Get("Recipients")
-
-	if to != recipient {
-		t.Errorf("test failed: expected %v got %v", recipient, to)
+	tests := []struct{ input, want string }{
+		{input: "233261111111", want: "233261111111"},
+		{input: "+233555111111", want: "+233555111111"},
 	}
+	f := New("", "", "")
 
-	if rs != recipient {
-		t.Errorf("test failed: expected %v got %v", recipient, rs)
+	for _, ts := range tests {
+		f.SetRecipient(ts.input)
+		to := f.payload.Get("To")
+		rs := f.payload.Get("Recipients")
+
+
+		if !reflect.DeepEqual(ts.want, to) {
+			t.Errorf("test failed: expected %v got %v", ts.want, to)
+		}
+
+		if !reflect.DeepEqual(ts.want, rs) {
+			t.Errorf("test failed: expected %v got %v", ts.want, rs)
+		}
 	}
 }
 
