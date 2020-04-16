@@ -1,21 +1,33 @@
 package fayasms
 
 import (
+	"reflect"
 	"testing"
-	"strings"
 )
 
 func TestSetBody(t *testing.T) {
-	sms := New("appkey", "appsecret", "senderid")
-	sms.SetBody("somebody");
-	
-	msg := sms.payload.Get("Message")
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{input: "somemessage", want: "somemessage"},
+		{input: "a very long text message", want: "a very long text message"},
+	}
 
-	if msg != "somebody" {
-		t.Errorf("Test failed: expected %v but got %v", "somebody", msg)
+	f := New("", "", "")
+
+	for _, ts := range tests {
+		f.SetBody(ts.input)
+		got := f.payload.Get("Message")
+		if !reflect.DeepEqual(ts.want, got) {
+			t.Errorf("test failed: expected %s but got %s", ts.want, got)
+		}
+
+		if len(got) > AllowedMsgLen {
+			t.Errorf("test failed: message length exceeds limit")
+		}
 	}
 }
-
 
 func TestSetRecipient(t *testing.T) {
 	sms := New("appkey", "appsecret", "senderid")
@@ -35,20 +47,27 @@ func TestSetRecipient(t *testing.T) {
 }
 
 func TestSetBulkRecipients(t *testing.T) {
-	sms := New("appkey", "appsecret", "senderid")
-	recipients := []string{"23326XXXXXXX", "23324XXXXXXX"}
-	sms.SetBulkRecipients(recipients)
-
-	expected := strings.Join(recipients, ",")
-
-	to := sms.payload.Get("To")
-	rs := sms.payload.Get("Recipients")
-
-	if to != expected {
-		t.Errorf("test failed: expected %v but got %v", expected, to)
+	tests := []struct {
+		input []string
+		want  string
+	}{
+		{input: []string{"23326XXXXXXX", "23324XXXXXXX"}, want: "23326XXXXXXX,23324XXXXXXX"},
+		{input: []string{"+233261111111", "+233541111111"}, want: "+233261111111,+233541111111"},
 	}
 
-	if rs != expected {
-		t.Errorf("test failed: expected %v but got %v", expected, rs)
+	f := New("", "", "")
+
+	for _, tb := range tests {
+		f.SetBulkRecipients(tb.input)
+		to := f.payload.Get("To")
+		rcs := f.payload.Get("Recipients")
+
+		if !reflect.DeepEqual(tb.want, to) {
+			t.Errorf("test failed: expected %v but got %v", tb.want, to)
+		}
+
+		if !reflect.DeepEqual(tb.want, rcs) {
+			t.Errorf("test failed: expected %v but got %v", tb.want, to)
+		}
 	}
 }
