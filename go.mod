@@ -1,3 +1,3 @@
-module github.com/yeboahnanaosei/gitplus
+module github.com/yeboahnanaosei/go
 
 go 1.14
