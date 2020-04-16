@@ -57,8 +57,8 @@ var extraConditionalFields = map[string][]map[string]string{
 }
 
 // checkConditionalFields checks that all contingent fields required by endpoint are set
-func (f *FayaSMS) checkConditionalFields(endpoint string, contingentFields map[string][]map[string]string) error {
-	fields, ok := contingentFields[endpoint]
+func (f *FayaSMS) checkConditionalFields(endpoint string, conditionalFields map[string][]map[string]string) error {
+	fields, ok := conditionalFields[endpoint]
 
 	// Some endpoints do not have any contingent fields
 	if !ok {
@@ -139,12 +139,10 @@ func (f *FayaSMS) RequestSenderID(senderID, desc string) (response string, err e
 	return f.exec("new_id")
 }
 
-
 // RetrieveMessages returns all the messages you've sent using your AppKey and AppSecret
 func (f *FayaSMS) RetrieveMessages() (response string, err error) {
 	return f.exec("messages")
 }
-
 
 // RetrieveMessage retrieves a particular message you've sent whose id is messageID
 func (f *FayaSMS) RetrieveMessage(messageID string) (response string, err error) {
