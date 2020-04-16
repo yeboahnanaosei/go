@@ -71,3 +71,31 @@ func TestSetBulkRecipients(t *testing.T) {
 		}
 	}
 }
+
+func TestSchedule(t *testing.T) {
+	tests := []struct {
+		date     string
+		wantDate string
+		time     string
+		wantTime string
+	}{
+		{date: "2020-08-02", wantDate: "2020-08-02", time: "12:00:00", wantTime: "12:00:00"},
+		{date: "2020-04-02", wantDate: "2020-04-02", time: "15:30:42", wantTime: "15:30:42"},
+	}
+
+	f := New("", "", "")
+
+	for _, ts := range tests {
+		f.Schedule(ts.date, ts.time)
+		gotDate := f.payload.Get("ScheduleDate")
+		gotTime := f.payload.Get("ScheduleTime")
+
+		if !reflect.DeepEqual(ts.wantDate, gotDate) {
+			t.Errorf("test failed: expected %v but got %v", ts.wantDate, gotDate)
+		}
+
+		if !reflect.DeepEqual(ts.wantTime, gotTime) {
+			t.Errorf("test failed: expected %v but got %v", ts.wantTime, gotTime)
+		}
+	}
+}
