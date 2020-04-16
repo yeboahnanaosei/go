@@ -9,7 +9,7 @@ import (
 // FayaSMS holds the entire data to be sent
 type FayaSMS struct {
 	payload url.Values
-	extra bool
+	extra   bool
 }
 
 // AllowedMsgLen is the limit on the number of allowed characters in the SMS body
@@ -53,7 +53,7 @@ func (f *FayaSMS) SetBody(body string) error {
 	return nil
 }
 
-// SetRecipient sets the recipient of the message. It must comply with the 
+// SetRecipient sets the recipient of the message. It must comply with the
 // telephone rules. Meaning the number must be in international telephone format
 // e.g: 23326XXXXXXX,23324XXXXXXX,23320XXXXXXX If you are sending a message
 // to multiple recipients use SetBulkRecipients instead
