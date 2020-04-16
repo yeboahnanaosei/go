@@ -32,9 +32,9 @@ func (f *FayaSMS) checkMandatoryFields(mandatoryFields []string) error {
 	return nil
 }
 
-// contingentFields are only required based on the endpoint being hit.
+// conditionalFields are only required based on the endpoint being hit.
 // This map shows the endpoints and the fields they require
-var contingentFields = map[string][]map[string]string{
+var conditionalFields = map[string][]map[string]string{
 	"send": {
 		{"name": "From", "errMsg": "no sender id has been set"},
 		{"name": "Message", "errMsg": "no message body has been set"},
@@ -46,7 +46,7 @@ var contingentFields = map[string][]map[string]string{
 	},
 }
 
-var extraContingentFields = map[string][]map[string]string{
+var extraConditionalFields = map[string][]map[string]string{
 	"send": {
 		{"name": "ScheduleDate", "errMsg": "no ScheduleDate supplied"},
 		{"name": "ScheduleTime", "errMsg": "no ScheduleTime supplied"},
@@ -56,8 +56,8 @@ var extraContingentFields = map[string][]map[string]string{
 	},
 }
 
-// checkContingentFields checks that all contingent fields required by endpoint are set
-func (f *FayaSMS) checkContingentFields(endpoint string, contingentFields map[string][]map[string]string) error {
+// checkConditionalFields checks that all contingent fields required by endpoint are set
+func (f *FayaSMS) checkConditionalFields(endpoint string, contingentFields map[string][]map[string]string) error {
 	fields, ok := contingentFields[endpoint]
 
 	// Some endpoints do not have any contingent fields
@@ -73,7 +73,7 @@ func (f *FayaSMS) checkContingentFields(endpoint string, contingentFields map[st
 
 	if f.extra {
 		f.extra = false
-		err := f.checkContingentFields(endpoint, extraContingentFields)
+		err := f.checkConditionalFields(endpoint, extraConditionalFields)
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ func (f *FayaSMS) exec(endpoint string) (response string, err error) {
 		return response, err
 	}
 
-	if err = f.checkContingentFields(endpoint, contingentFields); err != nil {
+	if err = f.checkConditionalFields(endpoint, conditionalFields); err != nil {
 		return response, err
 	}
 
