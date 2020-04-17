@@ -1,4 +1,4 @@
-package csv
+package cvet
 
 import (
 	"encoding/csv"

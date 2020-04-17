@@ -1,4 +1,4 @@
-package csv
+package cvet
 
 import (
 	"io"
@@ -35,7 +35,7 @@ func TestValidate(t *testing.T) {
 			},
 			err: nil,
 		},
-		
+
 	}
 
 	for _, tc := range table {
