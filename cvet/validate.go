@@ -6,10 +6,11 @@ import (
 	"strings"
 )
 
-// InvalidRecord is a record that is not valid.
-type InvalidRecord struct {
+// invalidRecord is a record or row in the csv file that has at least
+// one empty column.
+type invalidRecord struct {
 	RowNumber int      `json:"row"`
-	Columns   []string `json:"columns"`
+	Columns   []string `json:"cols"`
 }
 
 // Validate validates f as a valid csv file with valid data.
