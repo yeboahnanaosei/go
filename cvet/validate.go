@@ -14,9 +14,6 @@ type InvalidRecord struct {
 
 // Validate validates f as a valid csv file with valid data.
 func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidRecord, err error) {
-	// TODO: Run a check to ensure that we are getting a valid csv file
-	// Possibly we can check for the mime type
-
 	r := csv.NewReader(f)
 	r.TrimLeadingSpace = true
 
@@ -25,19 +22,26 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 		return validRecords, invalidRecords, err
 	}
 
-	rowOffset := 2
-	header := uploadedCSV[0]
+	// The first row in the csv is usually the header which has the name of each
+	// column in the csv file
+	var header []string = uploadedCSV[0]
 	headerLength := len(header)
 
-	for row, record := range uploadedCSV[1:] {
-		currentRecord := new(InvalidRecord)
-		currentRecord.RowNumber = row + rowOffset
+	// To determine the row number of an invalid row, we need to account for
+	// the header in the file
+	const headerOffset = 2
+
+	// Skip the header. Go through each row in the file checking that for each
+	// row there are no empty columns
+	for rowIndex, record := range uploadedCSV[1:] {
+		currentRecord := new(invalidRecord)
+		currentRecord.RowNumber = rowIndex + headerOffset
 		recordIsValid := true
 
-		for column, field := range record {
+		for columnIndex, field := range record {
 			if strings.TrimSpace(field) == "" {
 				recordIsValid = false
-				currentRecord.Columns = append(currentRecord.Columns, header[column])
+				currentRecord.Columns = append(currentRecord.Columns, header[columnIndex])
 			}
 		}
 
