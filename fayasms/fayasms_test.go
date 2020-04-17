@@ -23,7 +23,7 @@ func TestSetBody(t *testing.T) {
 			t.Errorf("test failed: expected %s but got %s", ts.want, got)
 		}
 
-		if len(got) > AllowedMsgLen {
+		if len(got) > MaxMsgLength {
 			t.Errorf("test failed: message length exceeds limit")
 		}
 	}
@@ -40,7 +40,6 @@ func TestSetRecipient(t *testing.T) {
 		f.SetRecipient(ts.input)
 		to := f.payload.Get("To")
 		rs := f.payload.Get("Recipients")
-
 
 		if !reflect.DeepEqual(ts.want, to) {
 			t.Errorf("test failed: expected %v got %v", ts.want, to)

@@ -1,82 +1,90 @@
 package fayasms
 
 import (
-	"fmt"
-	"net/url"
-	"strings"
+	"errors"
+	"io/ioutil"
+	"net/http"
 )
 
-// FayaSMS holds the entire data to be sent
-type FayaSMS struct {
-	payload url.Values
-	extra   bool
+var endpoints = map[string]string{
+	"send":     "https://devapi.fayasms.com/send",
+	"messages": "https://devapi.fayasms.com/messages",
+	"balance":  "https://devapi.fayasms.com/balance",
+	"estimate": "https://devapi.fayasms.com/estimate",
+	"senders":  "https://devapi.fayasms.com/senders",
+	"new_id":   "https://devapi.fayasms.com/senders/new",
 }
 
-// AllowedMsgLen is the limit on the number of allowed characters in the SMS body
-const AllowedMsgLen = 3200
+// exec is what does the actual work. It executes the actual http request by
+// fetching the endpoint and making a request to that endpoint. It also
+// performs the checks required before making the request.
+func (f *FayaSMS) exec(endpoint string) (response string, err error) {
+	// Fetch the endpoint we need to make the request to
+	endpnt, ok := endpoints[endpoint]
 
-var payload = map[string][]string{
-	"AppKey":       {},
-	"AppSecret":    {},
-	"From":         {},
-	"To":           {},
-	"Message":      {},
-	"ScheduleDate": {},
-	"ScheduleTime": {},
-	"MessageId":    {},
-	"Recipients":   {},
-	"Name":         {},
-	"Description":  {},
-}
-
-// New returns a new FayaSMS instance
-func New(appKey, appSecret, senderID string) *FayaSMS {
-	f := new(FayaSMS)
-	f.payload = url.Values{}
-	f.payload.Set("AppKey", appKey)
-	f.payload.Set("AppSecret", appSecret)
-	f.payload.Set("From", senderID)
-	return f
-}
-
-// SetBody sets the body of the text message to be sent.
-// The body must not be more than 3200 characters.
-// Must contain only UTF-8 characters
-func (f *FayaSMS) SetBody(body string) error {
-	msg := strings.TrimSpace(body)
-	msgLen := len(msg)
-	if msgLen > AllowedMsgLen {
-		return fmt.Errorf("fayasms: sms body cannot be more than %d characters. you currently have %d", AllowedMsgLen, msgLen)
+	if !ok {
+		return response, errors.New("fayasms: unknown endpoint targetted")
 	}
 
-	f.payload.Set("Message", body)
-	return nil
+	// Check if the mandatory fields have been set for this FayaSMS instance.
+	// The mandatory fields are required for all endpoints
+	if err = f.checkMandatoryFields(mandatoryFields); err != nil {
+		return response, err
+	}
+
+	// Now check the fields required for the particular endpoint only
+	if err = f.checkConditionalFields(endpoint, conditionalFields); err != nil {
+		return response, err
+	}
+
+	res, err := http.PostForm(endpnt, f.payload)
+	if err != nil {
+		return response, err
+	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return response, err
+	}
+	defer res.Body.Close()
+
+	return string(data), nil
 }
 
-// SetRecipient sets the recipient of the message. It must comply with the
-// telephone rules. Meaning the number must be in international telephone format
-// e.g: 23326XXXXXXX,23324XXXXXXX,23320XXXXXXX If you are sending a message
-// to multiple recipients use SetBulkRecipients instead
-func (f *FayaSMS) SetRecipient(r string) {
-	f.payload.Set("To", r)
-	f.payload.Set("Recipients", r)
+// Send sends the message to the recipient or recipients you've set
+func (f *FayaSMS) Send() (response string, err error) {
+	return f.exec("send")
 }
 
-// SetBulkRecipients sets all phone numbers in r as recipients of the text message.
-// Each phone number in r must comply with international telephone rules.
-// Meaning the number must be in international format.
-// eg e.g: 23326XXXXXXX,23324XXXXXXX
-func (f *FayaSMS) SetBulkRecipients(r []string) {
-	recipients := strings.Join(r, ",")
-	f.payload.Set("To", recipients)
-	f.payload.Set("Recipients", recipients)
+// GetEstimate lets you know the number of units it will cost you to send the message.
+// This is determined by length of your message body and the number of recipients.
+func (f *FayaSMS) GetEstimate() (response string, err error) {
+	return f.exec("estimate")
 }
 
-// Schedule schedules a message to be sent later on the set date and time.
-// date must be in the format "YYYY-MM-DD" eg. "2020-12-31" which is (2020 December 31st).
-// time must be in the 24hr format "HH:ii:ss" eg "13:30:04" which is 1pm 30min 4sec
-func (f *FayaSMS) Schedule(date string, time string) {
-	f.payload.Set("ScheduleDate", date)
-	f.payload.Set("ScheduleTime", time)
+// GetBalance returns your current balance on FayaSMS
+func (f *FayaSMS) GetBalance() (response string, err error) {
+	return f.exec("balance")
+}
+
+// RequestSenderID makes a request to FayaSMS for a new sender id
+// senderID is the sender id you are requesting for.
+// desc is a description of the sender id. What will you use the id for.
+// The description is used in the approval process
+func (f *FayaSMS) RequestSenderID(senderID, desc string) (response string, err error) {
+	f.payload.Set("Name", senderID)
+	f.payload.Set("Description", desc)
+	return f.exec("new_id")
+}
+
+// RetrieveMessages returns all the messages you've sent using your AppKey and AppSecret
+func (f *FayaSMS) RetrieveMessages() (response string, err error) {
+	return f.exec("messages")
+}
+
+// RetrieveMessage retrieves a particular message you've sent whose id is messageID
+func (f *FayaSMS) RetrieveMessage(messageID string) (response string, err error) {
+	f.payload.Set("MessageId", messageID)
 	f.extra = true
+	return f.exec("messages")
 }

@@ -1,20 +1,8 @@
 package fayasms
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
-
-var endpoints = map[string]string{
-	"send":     "https://devapi.fayasms.com/send",
-	"messages": "https://devapi.fayasms.com/messages",
-	"balance":  "https://devapi.fayasms.com/balance",
-	"estimate": "https://devapi.fayasms.com/estimate",
-	"senders":  "https://devapi.fayasms.com/senders",
-	"new_id":   "https://devapi.fayasms.com/senders/new",
-}
 
 // mandatoryFields are required by FayaSMS to be present in every request
 var mandatoryFields = []string{
@@ -80,73 +68,4 @@ func (f *FayaSMS) checkConditionalFields(endpoint string, conditionalFields map[
 	}
 
 	return nil
-}
-
-// exec executes the actual http request by fetching the endpoint
-// to make the request to
-func (f *FayaSMS) exec(endpoint string) (response string, err error) {
-	endpnt, ok := endpoints[endpoint]
-	if !ok {
-		return response, errors.New("fayasms: unknown endpoint targetted")
-	}
-
-	if err = f.checkMandatoryFields(mandatoryFields); err != nil {
-		return response, err
-	}
-
-	if err = f.checkConditionalFields(endpoint, conditionalFields); err != nil {
-		return response, err
-	}
-
-	res, err := http.PostForm(endpnt, f.payload)
-	if err != nil {
-		return response, err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return response, err
-	}
-	defer res.Body.Close()
-
-	return string(data), nil
-}
-
-// Send sends the message to the recipient or recipients you've set
-func (f *FayaSMS) Send() (response string, err error) {
-	return f.exec("send")
-}
-
-// GetEstimate lets you know the number of units it will cost you to send the message.
-// This is based on the size or length of your message body and the number of recipients.
-func (f *FayaSMS) GetEstimate() (response string, err error) {
-	return f.exec("estimate")
-}
-
-// GetBalance returns your current balance on FayaSMS
-func (f *FayaSMS) GetBalance() (response string, err error) {
-	return f.exec("balance")
-}
-
-// RequestSenderID makes a request to FayaSMS for a new sender id
-// senderID is the sender id you are requesting for.
-// desc is a description of the sender id. What will you use the id for.
-// The description is used in the approval process
-func (f *FayaSMS) RequestSenderID(senderID, desc string) (response string, err error) {
-	f.payload.Set("Name", senderID)
-	f.payload.Set("Description", desc)
-
-	return f.exec("new_id")
-}
-
-// RetrieveMessages returns all the messages you've sent using your AppKey and AppSecret
-func (f *FayaSMS) RetrieveMessages() (response string, err error) {
-	return f.exec("messages")
-}
-
-// RetrieveMessage retrieves a particular message you've sent whose id is messageID
-func (f *FayaSMS) RetrieveMessage(messageID string) (response string, err error) {
-	f.payload.Set("MessageId", messageID)
-	f.extra = true
-	return f.exec("messages")
 }
