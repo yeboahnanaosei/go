@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-// invalidRecord is a record or row in the csv file that has at least
+// InvalidRecord is a record or row in the csv file that has at least
 // one empty column.
-type invalidRecord struct {
+type InvalidRecord struct {
 	RowNumber int      `json:"row"`
 	Columns   []string `json:"cols"`
 }
@@ -35,7 +35,7 @@ func Validate(f io.Reader) (validRecords [][]string, invalidRecords[]InvalidReco
 	// Skip the header. Go through each row in the file checking that for each
 	// row there are no empty columns
 	for rowIndex, record := range uploadedCSV[1:] {
-		currentRecord := new(invalidRecord)
+		currentRecord := new(InvalidRecord)
 		currentRecord.RowNumber = rowIndex + headerOffset
 		recordIsValid := true
 
