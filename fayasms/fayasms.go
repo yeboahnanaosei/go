@@ -1,3 +1,7 @@
+// Package fayasms offers a simple native "api" in Go to allow interaction
+// with the FayaSMS web service api. FayaSMS is an online sms platform that
+// offers various sms services. This package make it easy to interact with the
+// service directly from within a Go application.
 package fayasms
 
 import (
@@ -6,7 +10,8 @@ import (
 	"strings"
 )
 
-// FayaSMS holds the entire data to be sent
+// FayaSMS holds the entire data to be sent. It holds the body of the eventual
+// post request that will be made to the online FayaSMS service.
 type FayaSMS struct {
 	payload url.Values
 	extra   bool
