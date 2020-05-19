@@ -1,7 +1,8 @@
 // Package fayasms offers a simple native "api" in Go to allow interaction
 // with the FayaSMS web service api. FayaSMS is an online sms platform that
 // offers various sms services. This package makes it easy to interact with the
-// service directly from within a Go application.
+// service directly from within a Go application. Visit http://fayasms.com to know
+// more about the service.
 package fayasms
 
 import (
