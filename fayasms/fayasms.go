@@ -6,6 +6,7 @@
 package fayasms
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"strings"
@@ -16,6 +17,7 @@ import (
 type FayaSMS struct {
 	payload url.Values
 	extra   bool
+	ctx     context.Context
 }
 
 // MaxMsgLength is the maximum number of characters allowed in the SMS body
@@ -39,6 +41,27 @@ func New(appKey, appSecret, senderID string) *FayaSMS {
 		},
 	}
 	return f
+}
+
+// NewWithContext returns a new FayaSMS instance with a user defined context.
+// This allows you to pass your own context to handle cancellation.
+func NewWithContext(ctx context.Context, appKey, appSecret, senderID string) *FayaSMS {
+	return &FayaSMS{
+		ctx: ctx,
+		payload: url.Values{
+			"AppKey":       {appKey},
+			"AppSecret":    {appSecret},
+			"From":         {senderID},
+			"To":           {},
+			"Message":      {},
+			"ScheduleDate": {},
+			"ScheduleTime": {},
+			"MessageId":    {},
+			"Recipients":   {},
+			"Name":         {},
+			"Description":  {},
+		},
+	}
 }
 
 // SetBody sets the body of the text message to be sent. The body must not be more

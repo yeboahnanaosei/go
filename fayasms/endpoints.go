@@ -1,9 +1,11 @@
 package fayasms
 
 import (
+	"context"
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 var endpoints = map[string]string{
@@ -37,7 +39,18 @@ func (f *FayaSMS) exec(endpoint string) (response string, err error) {
 		return response, err
 	}
 
-	res, err := http.PostForm(endpnt, f.payload)
+	req, err := http.NewRequest(http.MethodPost, endpnt, strings.NewReader(f.payload.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	if err != nil {
+		return response, err
+	}
+
+	if f.ctx == nil {
+		f.ctx = context.Background()
+	}
+	req = req.WithContext(f.ctx)
+
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return response, err
 	}
